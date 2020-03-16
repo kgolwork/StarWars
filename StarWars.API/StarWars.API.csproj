@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Migrations\20200315193007_Friendship.cs" />
+      <Compile Remove="Migrations\20200315193007_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200315193931_Friendship.cs" />
+      <Compile Remove="Migrations\20200315193931_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200315194329_Friendship.cs" />
+      <Compile Remove="Migrations\20200315194329_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200315194548_Friendship.cs" />
+      <Compile Remove="Migrations\20200315194548_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200315232127_Friendship.cs" />
+      <Compile Remove="Migrations\20200315232127_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200315232433_Friendship.cs" />
+      <Compile Remove="Migrations\20200315232433_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200316001418_Friendship.cs" />
+      <Compile Remove="Migrations\20200316001418_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200316082916_Friendship.cs" />
+      <Compile Remove="Migrations\20200316082916_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200316090858_Friendship.cs" />
+      <Compile Remove="Migrations\20200316090858_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200316091028_Friendship.cs" />
+      <Compile Remove="Migrations\20200316091028_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200316121451_bla.cs" />
+      <Compile Remove="Migrations\20200316121451_bla.Designer.cs" />
+      <Compile Remove="Migrations\20200316173459_Friendship.cs" />
+      <Compile Remove="Migrations\20200316173459_Friendship.Designer.cs" />
+      <Compile Remove="Migrations\20200316173937_TransitionToFluentApi.cs" />
+      <Compile Remove="Migrations\20200316173937_TransitionToFluentApi.Designer.cs" />
+      <Compile Remove="Migrations\20200316174023_TransitionToFluentApi.cs" />
+      <Compile Remove="Migrations\20200316174023_TransitionToFluentApi.Designer.cs" />
+      <Compile Remove="Migrations\20200316180606_Episodes.cs" />
+      <Compile Remove="Migrations\20200316180606_Episodes.Designer.cs" />
+      <Compile Remove="Migrations\20200316184740_Episodes.cs" />
+      <Compile Remove="Migrations\20200316184740_Episodes.Designer.cs" />
+      <Compile Remove="Migrations\20200316195811_Episodes.cs" />
+      <Compile Remove="Migrations\20200316195811_Episodes.Designer.cs" />
+      <Compile Remove="Migrations\20200316205228_sdd.cs" />
+      <Compile Remove="Migrations\20200316205228_sdd.Designer.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="9.0.0" />
+      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="3.1.2" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+      <PackageReference Include="NUnit" Version="3.12.0" />
+    </ItemGroup>
+
+
+</Project>
