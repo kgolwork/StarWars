@@ -52,21 +52,10 @@ namespace StarWars.API.Controllers
         {
             var character = _mapper.Map<CharacterToAddOrUpdateDto, Character>(characterToAddDto);
 
+            character = this.ChangeCharacterFriends(character, characterToAddDto.FriendsIds);
+            character = this.ChangeCharacterEpisodes(character, characterToAddDto.EpisodesIds);
+
             _repository.Add(character);
-            if (!await _repository.SaveAll())
-                throw new Exception("Failed to add new character");
-
-            if (characterToAddDto.FriendsIds.Any())
-            {
-                foreach (var friendId in characterToAddDto.FriendsIds)
-                    await _repository.AddFriendship(character.Id, friendId);
-            }
-
-            if (characterToAddDto.EpisodesIds.Any())
-            {
-                foreach (var episodeId in characterToAddDto.EpisodesIds)
-                    await _repository.AddCharacterEpisode(character.Id, episodeId);
-            }
 
             if (await _repository.SaveAll())
             {
@@ -83,15 +72,10 @@ namespace StarWars.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var character = await _repository.Get(id, includeRelated: false);
+            var character = await _repository.Get(id, true);
 
             if (character == null)
                 return NotFound();
-
-            var friendsIds = await _repository.GetFriendsIds(id);
-
-            foreach (var friendId in friendsIds)
-                _repository.DeleteFriendship(character.Id, friendId);
 
             _repository.Delete(character);
             if (await _repository.SaveAll())
@@ -103,15 +87,15 @@ namespace StarWars.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] CharacterToAddOrUpdateDto characterToUpdate)
         {
-            var character = await _repository.Get(id, includeRelated: false);
+            var character = await _repository.Get(id, includeRelated: true);
 
             if (character == null)
                 return NotFound();
 
             _mapper.Map<CharacterToAddOrUpdateDto, Character>(characterToUpdate, character);
 
-            await this.UpdateFriendship(id, characterToUpdate.FriendsIds);
-            await this.UpdateCharacterEpisodes(id, characterToUpdate.EpisodesIds);
+            character = this.ChangeCharacterFriends(character, characterToUpdate.FriendsIds);
+            character = this.ChangeCharacterEpisodes(character, characterToUpdate.EpisodesIds);
 
             if (await _repository.SaveAll()) { 
                 var updatedCharacter = await _repository.Get(character.Id);
@@ -123,33 +107,44 @@ namespace StarWars.API.Controllers
             throw new Exception($"Failed to update character {id}");
         }
 
-        private async Task UpdateFriendship(int characterId, ICollection<int> newFriendsIds)
+        private Character ChangeCharacterFriends(Character characterToChange, ICollection<int> newFriendsIds)
         {
-            var friendsIds = await _repository.GetFriendsIds(characterId);
+            ICollection<Friendship> friends = new List<Friendship>();
 
-            var friendsIdsToAdd = newFriendsIds.Except(friendsIds);
-            var friendsIdsToRemove = friendsIds.Except(newFriendsIds);
+            foreach (var friendId in newFriendsIds)
+                friends.Add(new Friendship
+                {
+                    FriendId = friendId
+                });
 
-            foreach (var friendId in friendsIdsToAdd)
-                await _repository.AddFriendship(characterId, friendId);
+            ICollection<Friendship> friendsOfMine = new List<Friendship>();
 
-            foreach (var friendId in friendsIdsToRemove)
-                _repository.DeleteFriendship(characterId, friendId);
+            foreach (var friendId in newFriendsIds)
+                friendsOfMine.Add(new Friendship
+                {
+                    CharacterId = friendId,
+                    Friend = characterToChange
+                });
+
+            characterToChange.Friends = friends;
+            characterToChange.FriendsOfMine = friendsOfMine;
+
+            return characterToChange;
         }
 
-        private async Task UpdateCharacterEpisodes(int characterId, ICollection<int> newEpisodesIds)
+        private Character ChangeCharacterEpisodes(Character characterToChange, ICollection<int> newEpisodesIds)
         {
-            var episodes = await _repository.GetEpisodesForCharacter(characterId);
-            var episodesIds = episodes.Select(e => e.Id);
+            ICollection<CharacterEpisode> characterEpisodes = new List<CharacterEpisode>();
 
-            var episodesIdsToAdd = newEpisodesIds.Except(episodesIds);
-            var episodesIdsToRemove = episodesIds.Except(newEpisodesIds);
+            foreach (var episodeId in newEpisodesIds)
+                characterEpisodes.Add(new CharacterEpisode
+                {
+                    EpisodeId = episodeId
+                });
 
-            foreach (var episodeId in episodesIdsToAdd)
-                await _repository.AddCharacterEpisode(characterId, episodeId);
+            characterToChange.Episodes = characterEpisodes;
 
-            foreach (var episodeId in episodesIdsToRemove)
-                _repository.DeleteCharacterEpisode(characterId, episodeId);
+            return characterToChange;
         }
     }
 }

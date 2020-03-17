@@ -10,5 +10,6 @@ namespace StarWars.API.Models
         public string Name { get; set; }
         public virtual ICollection<CharacterEpisode> Episodes { get; set; }
         public virtual ICollection<Friendship> Friends { get; set; }
+        public virtual ICollection<Friendship> FriendsOfMine { get; set; }
     }
 }

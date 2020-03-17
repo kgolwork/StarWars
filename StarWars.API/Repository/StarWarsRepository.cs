@@ -25,6 +25,7 @@ namespace StarWars.API.Repository
                 _context.Characters
                 .Include(c => c.Friends)
                     .ThenInclude(f => f.Friend)
+                .Include(c => c.FriendsOfMine)
                 .Include(c => c.Episodes)
                     .ThenInclude(e => e.Episode)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -61,60 +62,6 @@ namespace StarWars.API.Repository
         public void Delete(Character character)
         {
             _context.Remove(character);
-        }
-
-        public async Task AddCharacterEpisode(int characterId, int episodeId)
-        {
-            var characterEpisode = new CharacterEpisode
-            {
-                CharacterId = characterId,
-                EpisodeId = episodeId
-            };
-
-            await _context.CharacterEpisodes.AddAsync(characterEpisode);
-        }
-
-        public void DeleteCharacterEpisode(int characterId, int episodeId)
-        {
-            var characterEpisode = new CharacterEpisode
-            {
-                CharacterId = characterId,
-                EpisodeId = episodeId
-            };
-
-            _context.CharacterEpisodes.Remove(characterEpisode);
-        }
-
-        public async Task AddFriendship(int characterId, int friendId)
-        {
-            var friendshipCharacterToFriend = new Friendship { CharacterId = characterId, FriendId = friendId };
-            var friendshipFriendToCharacter = new Friendship { CharacterId = friendId, FriendId = characterId };
-            await _context.Friendships.AddAsync(friendshipCharacterToFriend);
-            await _context.Friendships.AddAsync(friendshipFriendToCharacter);
-        }
-
-        public void DeleteFriendship(int characterId, int friendId)
-        {
-            var friendshipCharacterToFriend = new Friendship { CharacterId = characterId, FriendId = friendId };
-            var friendshipFriendToCharacter = new Friendship { CharacterId = friendId, FriendId = characterId };
-            _context.Friendships.Remove(friendshipCharacterToFriend);
-            _context.Friendships.Remove(friendshipFriendToCharacter);
-        }
-
-        public async Task<IEnumerable<int>> GetFriendsIds(int id)
-        {
-            return await _context.Friendships
-                .Where(f => f.CharacterId == id)
-                .Select(f => f.FriendId)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Episode>> GetEpisodesForCharacter(int id)
-        {
-            return await (from episode in _context.Episodes
-                    join characterEpisode in _context.CharacterEpisodes on episode.Id equals characterEpisode.EpisodeId
-                    where characterEpisode.CharacterId == id
-                    select episode).ToListAsync();
         }
 
         public async Task<bool> SaveAll()
