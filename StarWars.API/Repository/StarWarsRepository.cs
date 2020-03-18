@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using StarWars.API.Extensions;
@@ -33,6 +34,17 @@ namespace StarWars.API.Repository
             return character;
         }
 
+        public async Task<Character> GetWithoutFriends(int id)
+        {
+            var character = await
+                _context.Characters
+                    .Include(c => c.Episodes)
+                    .ThenInclude(e => e.Episode)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+            return character;
+        }
+
         public void Add(Character character)
         {
             _context.Characters.Add(character);         
@@ -61,7 +73,21 @@ namespace StarWars.API.Repository
 
         public void Delete(Character character)
         {
+            this.DeleteFriends(character);
             _context.Remove(character);
+        }
+
+        private void DeleteFriends(Character character)
+        {
+            var friendsIds = _context.Friendships.Where(ch => ch.CharacterId == character.Id).Select(c => c.FriendId);
+
+            foreach (var friendId in friendsIds)
+            {
+                var friendshipCharacterToFriend = new Friendship { CharacterId = character.Id , FriendId = friendId };
+                var friendshipFriendToCharacter = new Friendship { CharacterId = friendId, FriendId = character.Id};
+                _context.Friendships.Remove(friendshipFriendToCharacter);
+                _context.Friendships.Remove(friendshipCharacterToFriend);
+            }
         }
 
         public async Task<bool> SaveAll()

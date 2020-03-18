@@ -72,7 +72,7 @@ namespace StarWars.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var character = await _repository.Get(id, true);
+            var character = await _repository.GetWithoutFriends(id);
 
             if (character == null)
                 return NotFound();
