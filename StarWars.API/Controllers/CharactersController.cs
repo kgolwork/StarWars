@@ -91,6 +91,9 @@ namespace StarWars.API.Controllers
 
             if (character == null)
                 return NotFound();
+            
+            if (characterToUpdate.FriendsIds.Contains((character.Id)))
+                throw new Exception("Character can not be friend to himself");
 
             _mapper.Map<CharacterToAddOrUpdateDto, Character>(characterToUpdate, character);
 
